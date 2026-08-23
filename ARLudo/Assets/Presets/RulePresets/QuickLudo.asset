@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cde0c98b308e104991e2ba8ebb6abdd, type: 3}
   m_Name: QuickLudo
   m_EditorClassIdentifier: Assembly-CSharp::ARLudo.Core.LudoRules
-  openingRoll: 0
+  openingRoll: 1
   bonusTurnOnSix: 1
   consecutiveSixRule: 0
   bonusTurnOnCapture: 1
@@ -20,6 +20,6 @@ MonoBehaviour:
   safeZoneRule: 0
   captureRequiredBeforeHome: 0
   blockadeRule: 0
-  winCondition: 0
+  winCondition: 1
   timedRushDuration: 300
   turnTimeLimit: 30

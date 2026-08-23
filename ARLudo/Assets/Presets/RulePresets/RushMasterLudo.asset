@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: RushMasterLudo
   m_EditorClassIdentifier: Assembly-CSharp::ARLudo.Core.LudoRules
   openingRoll: 0
-  bonusTurnOnSix: 1
+  bonusTurnOnSix: 0
   consecutiveSixRule: 0
   bonusTurnOnCapture: 1
   bonusTurnOnGoal: 0
-  safeZoneRule: 0
+  safeZoneRule: 2
   captureRequiredBeforeHome: 0
-  blockadeRule: 0
+  blockadeRule: 1
   winCondition: 0
   timedRushDuration: 300
   turnTimeLimit: 30
