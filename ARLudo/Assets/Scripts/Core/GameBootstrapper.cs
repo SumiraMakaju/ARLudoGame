@@ -54,7 +54,6 @@ public class GameBootstrapper : MonoBehaviour
             gameManager.OnPawnCaptured += _ => UpdateAllPanels();
             gameManager.OnPawnReachedGoal += _ => UpdateAllPanels();
             gameManager.OnPawnExitedYard += _ => UpdateAllPanels();
-            gameManager.OnPawnMoved += (_, __, ___) => UpdateAllPanels();
         }
 
         gameManager.StartGame();
@@ -65,8 +64,18 @@ public class GameBootstrapper : MonoBehaviour
         if (gameManager == null || gameManager.CurrentPhase == GamePhase.GameOver) return;
         if (waitingForAI || diceInProgress) return;
 
-        if (gameManager.CurrentPhase == GamePhase.Rolling && gameManager.CurrentPlayer.IsAI)
-            StartCoroutine(AIRoll());
+        if (gameManager.CurrentPhase == GamePhase.Rolling)
+        {
+             if (gameManager.CurrentPlayer.IsAI)
+                 {
+                     if (!waitingForAI) StartCoroutine(AIRoll());
+                  }
+             else if (WasTapped() && !diceInProgress)
+                 {
+                     hud.StopTimer();
+                     diceController.ThrowDice();
+                }
+        }
 
         if (gameManager.CurrentPhase == GamePhase.ChoosingPawn)
         {
