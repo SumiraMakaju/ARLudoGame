@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using ARLudo.Core;
@@ -36,6 +37,12 @@ public class GameBootstrapper : MonoBehaviour
         }
 
         gameManager.InitializeGame(playerList);
+        
+        // Initialize any LudoAgents in the scene so they can play
+        foreach(var agent in Object.FindObjectsByType<ARLudo.AI.LudoAgent>(FindObjectsSortMode.None)) {
+            agent.Setup(gameManager.Board, rules, playerList);
+        }
+        
         visualController.gameManager = gameManager;
         visualController.Initialize();
 
@@ -127,9 +134,32 @@ public class GameBootstrapper : MonoBehaviour
     {
         waitingForAI = true;
         yield return new WaitForSeconds(aiDelay * 0.5f);
-        var moves = gameManager.GetCurrentLegalMoves();
-        if (moves != null && moves.Count > 0)
-            gameManager.SelectMove(Random.Range(0, moves.Count));
+        
+        var agent = Object.FindObjectsByType<ARLudo.AI.LudoAgent>(FindObjectsSortMode.None)
+                     .FirstOrDefault(a => a.agentColor == gameManager.CurrentPlayer.Color);
+                     
+        if (agent != null)
+        {
+            agent.ResetMoveSelection();
+            int instantMove = agent.RequestMove(gameManager.LastDiceValue);
+            
+            if (instantMove >= 0)
+            {
+                gameManager.SelectMove(instantMove);
+            }
+            else if (instantMove == -2)
+            {
+                while (!agent.HasSelectedMove) yield return null;
+                gameManager.SelectMove(agent.GetSelectedMove());
+            }
+        }
+        else
+        {
+            var moves = gameManager.GetCurrentLegalMoves();
+            if (moves != null && moves.Count > 0)
+                gameManager.SelectMove(Random.Range(0, moves.Count));
+        }
+        
         waitingForAI = false;
     }
 

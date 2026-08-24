@@ -8,9 +8,8 @@ namespace ARLudo.AI
     public class LudoAIPlayer : MonoBehaviour
     {
         public LudoAgent agent;
-        public float thinkDelay = 0.8f;
+        public float thinkDelay = 0.5f;
         public bool useML = true;
-
         private LudoGameManager gameManager;
 
         public void Setup(LudoGameManager gm)
@@ -20,11 +19,9 @@ namespace ARLudo.AI
 
         public IEnumerator MakeMove(int diceValue, List<LudoMoveResult> moves)
         {
-            yield return new WaitForSeconds(thinkDelay);
+            if (thinkDelay > 0) yield return new WaitForSeconds(thinkDelay);
 
-            if (moves == null || moves.Count == 0)
-                yield break;
-
+            if (moves == null || moves.Count == 0) yield break;
             if (moves.Count == 1)
             {
                 gameManager.SelectMove(0);
@@ -36,7 +33,9 @@ namespace ARLudo.AI
                 int result = agent.RequestMove(diceValue);
                 if (result == -2)
                 {
-                    yield return new WaitForSeconds(0.1f);
+                    // This is the true fix: safely waits for the Python response 
+                    yield return new WaitUntil(() => agent.HasSelectedMove);
+                    
                     int selected = agent.GetSelectedMove();
                     if (selected >= 0 && selected < moves.Count)
                     {
@@ -51,31 +50,8 @@ namespace ARLudo.AI
                 }
             }
 
-            int pick = UtilityFallback(moves);
-            gameManager.SelectMove(pick);
-        }
-
-        private int UtilityFallback(List<LudoMoveResult> moves)
-        {
-            int best = 0;
-            float bestScore = float.MinValue;
-
-            for (int i = 0; i < moves.Count; i++)
-            {
-                float score = 0;
-                if (moves[i].IsCapture) score += 100;
-                if (moves[i].IsReachingGoal) score += 120;
-                if (moves[i].IsEnteringHomeCorridor) score += 60;
-                if (moves[i].IsExitingYard) score += 50;
-                score += Random.Range(0f, 10f);
-
-                if (score > bestScore)
-                {
-                    bestScore = score;
-                    best = i;
-                }
-            }
-            return best;
+            // Fallback random move
+            gameManager.SelectMove(Random.Range(0, moves.Count));
         }
     }
 }

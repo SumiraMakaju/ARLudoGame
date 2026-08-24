@@ -30,3 +30,9 @@ sysinfo.txt
 .idea/
 .DS_Store
 Thumbs.db
+
+# ML-Agents Models
+*.onnx
+*.onnx.meta
+mlagents_env/
+results/
