@@ -216,6 +216,7 @@ namespace ARLudo.Core
             {
                 hasBonusTurn = false;
                 SetPhase(GamePhase.Rolling);
+                OnTurnChanged?.Invoke(CurrentPlayer);
                 return;
             }
 

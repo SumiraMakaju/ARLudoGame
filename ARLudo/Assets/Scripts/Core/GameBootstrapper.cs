@@ -44,11 +44,17 @@ public class GameBootstrapper : MonoBehaviour
 
         if (hud != null)
         {
-            gameManager.OnTurnChanged += p => hud.UpdateTurn(p);
+            hud.SetupRollButton(OnRollButtonPressed);
+            hud.InitPlayerPanels(playerList);
+            gameManager.OnTurnChanged += OnTurnChanged;
             gameManager.OnDiceRolled += v => hud.UpdateDice(v);
             gameManager.OnLegalMovesCalculated += _ => hud.ShowChoosePawn();
             gameManager.OnNoValidMoves += () => hud.ShowNoMoves();
             gameManager.OnPlayerWon += p => hud.ShowWinner(p);
+            gameManager.OnPawnCaptured += _ => UpdateAllPanels();
+            gameManager.OnPawnReachedGoal += _ => UpdateAllPanels();
+            gameManager.OnPawnExitedYard += _ => UpdateAllPanels();
+            gameManager.OnPawnMoved += (_, __, ___) => UpdateAllPanels();
         }
 
         gameManager.StartGame();
@@ -59,13 +65,8 @@ public class GameBootstrapper : MonoBehaviour
         if (gameManager == null || gameManager.CurrentPhase == GamePhase.GameOver) return;
         if (waitingForAI || diceInProgress) return;
 
-        if (gameManager.CurrentPhase == GamePhase.Rolling)
-        {
-            if (gameManager.CurrentPlayer.IsAI)
-                StartCoroutine(AIRoll());
-            else if (WasTapped())
-                diceController.ThrowDice();
-        }
+        if (gameManager.CurrentPhase == GamePhase.Rolling && gameManager.CurrentPlayer.IsAI)
+            StartCoroutine(AIRoll());
 
         if (gameManager.CurrentPhase == GamePhase.ChoosingPawn)
         {
@@ -76,11 +77,40 @@ public class GameBootstrapper : MonoBehaviour
         }
     }
 
+    private void OnRollButtonPressed()
+    {
+        if (gameManager.CurrentPhase != GamePhase.Rolling) return;
+        if (gameManager.CurrentPlayer.IsAI) return;
+        if (diceInProgress) return;
+        hud.StopTimer();
+        diceController.ThrowDice();
+    }
+
+    private void OnTurnChanged(LudoPlayer player)
+    {
+        hud.UpdateTurn(player);
+        if (!player.IsAI && rules.turnTimeLimit > 0)
+        {
+            hud.StartTurnTimer(rules.turnTimeLimit, () =>
+            {
+                if (gameManager.CurrentPhase == GamePhase.Rolling)
+                    diceController.ThrowDice();
+            });
+        }
+    }
+
+    private void UpdateAllPanels()
+    {
+        foreach (var player in gameManager.Players)
+            hud.UpdatePlayerPanel(player);
+    }
+
     private IEnumerator AIRoll()
     {
         waitingForAI = true;
         yield return new WaitForSeconds(aiDelay);
-        diceController.ThrowDice();
+        if (!diceInProgress)
+            diceController.ThrowDice();
         waitingForAI = false;
     }
 
@@ -120,7 +150,10 @@ public class GameBootstrapper : MonoBehaviour
         {
             var pv = hit.collider.GetComponent<PawnVisual>();
             if (pv != null && pv.Data != null)
+            {
+                hud.StopTimer();
                 gameManager.SelectPawn(pv.Data);
+            }
         }
     }
 }
