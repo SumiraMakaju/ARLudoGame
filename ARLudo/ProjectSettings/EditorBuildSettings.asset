@@ -15,5 +15,10 @@ EditorBuildSettings:
     path: Assets/Scenes/LudoGame.unity
     guid: ef1e2de5c8fdc254dbab62ec5b4ea686
   m_configObjects:
+    UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: d21f31365ac1f5d449f82fabacaa9c72, type: 2}
+    UnityEditor.XR.ARKit.ARKitSettings: {fileID: 11400000, guid: 3e717388f5104fb4e82229bcba85b2af, type: 2}
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: b4119c057a1120148a93f12de4a42f0e, type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: dbefc1e896d3c654bbc265c499c16fc8, type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 29de9abc119cb0c47b2958a30fcea949, type: 2}

@@ -36,3 +36,7 @@ Thumbs.db
 *.onnx.meta
 mlagents_env/
 results/
+
+# Build artifacts
+*_BurstDebugInformation_DoNotShip/
+*_BackUpThisFolder_ButDontShipItWithYourGame/
