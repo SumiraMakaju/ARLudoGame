@@ -18,12 +18,24 @@ namespace ARLudo.UI
         public GameObject gameOverPanel;
         public TMP_Text winnerText;
         public PlayerPanel[] playerPanels;
+        public Button quitButton;
 
         private float turnTimeLimit;
         private float turnTimer;
         private bool timerRunning;
         private System.Action onTimerExpired;
         private bool currentPlayerIsAI;
+
+        void Start()
+        {
+            if (quitButton != null)
+            {
+                quitButton.onClick.AddListener(() => 
+                {
+                    UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+                });
+            }
+        }
 
         void Update()
         {
