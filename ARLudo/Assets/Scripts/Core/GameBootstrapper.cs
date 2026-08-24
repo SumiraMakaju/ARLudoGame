@@ -27,6 +27,13 @@ public class GameBootstrapper : MonoBehaviour
         gameManager = gameObject.AddComponent<LudoGameManager>();
         gameManager.rules = rules;
 
+        // Use GameSettingsData if available
+        if (GameSettingsData.HumanPlayers > 0 || GameSettingsData.AIPlayers > 0)
+        {
+            humanPlayers = GameSettingsData.HumanPlayers;
+            aiPlayers = GameSettingsData.AIPlayers;
+        }
+
         var playerList = new List<LudoPlayer>();
         var colors = new[] { PlayerColor.Red, PlayerColor.Green, PlayerColor.Yellow, PlayerColor.Blue };
         int total = Mathf.Clamp(humanPlayers + aiPlayers, 2, 4);
