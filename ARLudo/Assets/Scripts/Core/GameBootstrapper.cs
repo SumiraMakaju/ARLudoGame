@@ -202,4 +202,16 @@ public class GameBootstrapper : MonoBehaviour
             }
         }
     }
+
+        public void OnPawnSelected(PawnVisual pv)
+    {
+        if (gameManager == null || gameManager.CurrentPhase != GamePhase.ChoosingPawn) return;
+        if (gameManager.CurrentPlayer.IsAI || waitingForAI) return;
+
+        if (pv != null && pv.Data != null)
+        {
+            if (hud != null) hud.StopTimer();
+            gameManager.SelectPawn(pv.Data);
+        }
+    }
 }
