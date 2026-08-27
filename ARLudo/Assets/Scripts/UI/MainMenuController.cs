@@ -27,6 +27,7 @@ namespace ARLudo.UI
         {
             mainPanel.SetActive(false);
             matchSetupPanel.SetActive(true);
+            rulesPanel.SetActive(false);
         }
 
         public void ShowRules()
