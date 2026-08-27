@@ -3585,7 +3585,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 405024187}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 42365912}
+        m_TargetAssemblyTypeName: ARLudo.UI.RulesCustomizerController, Assembly-CSharp
+        m_MethodName: Setup
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: ARLudo.Core.LudoRules, Assembly-CSharp
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &410938477
 GameObject:
   m_ObjectHideFlags: 0
@@ -4535,6 +4547,7 @@ GameObject:
   - component: {fileID: 503872904}
   - component: {fileID: 503872906}
   - component: {fileID: 503872905}
+  - component: {fileID: 503872907}
   m_Layer: 5
   m_Name: Rules Customizer Panel
   m_TagString: Untagged
@@ -4603,6 +4616,31 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 503872903}
   m_CullTransparentMesh: 1
+--- !u!114 &503872907
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 503872903}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f40fad1e70963784a9d2b5cbf5cdbfd6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ARLudo.UI.RulesCustomizerController
+  openingRollDropdown: {fileID: 0}
+  bonusTurnOnSixToggle: {fileID: 0}
+  consecutiveSixDropdown: {fileID: 0}
+  bonusTurnOnCaptureToggle: {fileID: 0}
+  bonusTurnOnGoalToggle: {fileID: 0}
+  safeZoneDropdown: {fileID: 0}
+  captureRequiredToggle: {fileID: 0}
+  blockadeDropdown: {fileID: 0}
+  winConditionDropdown: {fileID: 0}
+  turnTimerSlider: {fileID: 0}
+  turnTimerValueText: {fileID: 0}
+  applyBtn: {fileID: 0}
+  backBtn: {fileID: 0}
 --- !u!1 &509456495
 GameObject:
   m_ObjectHideFlags: 0
@@ -7564,7 +7602,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 752284861}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 42365914}
+        m_TargetAssemblyTypeName: ARLudo.UI.MainMenuController, Assembly-CSharp
+        m_MethodName: ShowRules
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &752284861
 MonoBehaviour:
   m_ObjectHideFlags: 0
