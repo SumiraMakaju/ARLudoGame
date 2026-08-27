@@ -1,68 +1,149 @@
-using System.Collections;
 using UnityEngine;
+using System.Collections;
 using ARLudo.Core;
 
 namespace ARLudo.Visuals
 {
     public class PawnVisual : MonoBehaviour
     {
+        public float moveSpeed = 6f;
+        public float hopHeight = 0.08f;
+        public float hoverHeight = 0.04f;
+        public float pulseSpeed = 6f;
+
         public LudoPawn Data { get; private set; }
         public bool IsMoving { get; private set; }
-        public float hopDuration = 0.35f;
-        public float hopHeight = 0.06f;
 
-        private Renderer meshRenderer;
+        private MeshRenderer[] meshRenderers;
+        private Material[] materialInstances;
+        private Color baseColor;
+        private Color glowColor;
+        private bool isSelectable = false;
+        private Vector3 restingLocalPos;
 
-        public void Initialize(LudoPawn pawnData, Color color)
+        void Start()
         {
-            Data = pawnData;
-            meshRenderer = GetComponentInChildren<Renderer>();
-            if (meshRenderer != null)
+            restingLocalPos = transform.localPosition;
+        }
+
+        public void Initialize(LudoPawn data, Color baseUnityColor)
+        {
+            Data = data;
+            baseColor = baseUnityColor;
+            
+            float h, s, v;
+            Color.RGBToHSV(baseUnityColor, out h, out s, out v);
+            glowColor = Color.HSVToRGB(h, s, 1f) * 2.5f;
+
+            meshRenderers = GetComponentsInChildren<MeshRenderer>(true);
+            materialInstances = new Material[meshRenderers.Length];
+            
+            for (int i = 0; i < meshRenderers.Length; i++)
             {
-                meshRenderer.material = new Material(meshRenderer.material);
-                meshRenderer.material.color = color;
+                if (meshRenderers[i] != null)
+                {
+                    materialInstances[i] = meshRenderers[i].material;
+                    materialInstances[i].color = baseColor;
+                    
+                    if (materialInstances[i].HasProperty("_BaseColor"))
+                    {
+                        materialInstances[i].SetColor("_BaseColor", baseColor);
+                    }
+                    if (materialInstances[i].HasProperty("_Color"))
+                    {
+                        materialInstances[i].SetColor("_Color", baseColor);
+                    }
+                }
             }
         }
 
-        public void MoveTo(Vector3 destination, System.Action onComplete = null)
+        void Update()
+        {
+            if (isSelectable && !IsMoving)
+            {
+                float bob = Mathf.PingPong(Time.time * 0.15f, hoverHeight);
+                transform.localPosition = new Vector3(restingLocalPos.x, restingLocalPos.y + bob, restingLocalPos.z);
+
+                float pulse = (Mathf.Sin(Time.time * pulseSpeed) + 1f) * 0.5f;
+                Color currentGlow = Color.Lerp(baseColor, glowColor, pulse);
+
+                if (materialInstances != null)
+                {
+                    foreach (var mat in materialInstances)
+                    {
+                        if (mat != null)
+                        {
+                            mat.EnableKeyword("_EMISSION");
+                            mat.SetColor("_EmissionColor", currentGlow);
+                        }
+                    }
+                }
+            }
+        }
+
+        public void SetHighlight(bool active)
+        {
+            isSelectable = active;
+
+            if (!active)
+            {
+                transform.localPosition = restingLocalPos;
+                if (materialInstances != null)
+                {
+                    foreach (var mat in materialInstances)
+                    {
+                        if (mat != null)
+                        {
+                            mat.SetColor("_EmissionColor", Color.black);
+                            mat.DisableKeyword("_EMISSION");
+                        }
+                    }
+                }
+            }
+        }
+
+        public void TeleportTo(Vector3 position)
+        {
+            transform.position = position;
+        }
+
+        public void MoveTo(Vector3 worldTarget, System.Action onComplete = null)
         {
             if (IsMoving) return;
-            StartCoroutine(HopRoutine(destination, onComplete));
+            StartCoroutine(HopTo(worldTarget, onComplete));
         }
 
-        public void TeleportTo(Vector3 position) => transform.position = position;
-
-        public void SetHighlight(bool on)
-        {
-            if (meshRenderer == null) return;
-            if (on)
-            {
-                meshRenderer.material.EnableKeyword("_EMISSION");
-                meshRenderer.material.SetColor("_EmissionColor", meshRenderer.material.color * 0.5f);
-            }
-            else
-            {
-                meshRenderer.material.DisableKeyword("_EMISSION");
-                meshRenderer.material.SetColor("_EmissionColor", Color.black);
-            }
-        }
-
-        private IEnumerator HopRoutine(Vector3 dest, System.Action onComplete)
+        IEnumerator HopTo(Vector3 target, System.Action onComplete)
         {
             IsMoving = true;
+            SetHighlight(false);
+
+            if (ARLudoAudioManager.Instance != null)
+            {
+                ARLudoAudioManager.Instance.PlayHop();
+            }
+
             Vector3 start = transform.position;
+            float dist = Vector3.Distance(start, target);
+            float duration = Mathf.Max(0.15f, dist / moveSpeed);
             float elapsed = 0f;
-            while (elapsed < hopDuration)
+
+            while (elapsed < duration)
             {
                 elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed / hopDuration);
-                Vector3 pos = Vector3.Lerp(start, dest, Mathf.SmoothStep(0, 1, t));
-                pos.y += hopHeight * 4f * t * (1f - t);
-                transform.position = pos;
+                float t = Mathf.Clamp01(elapsed / duration);
+
+                Vector3 current = Vector3.Lerp(start, target, t);
+                current.y += Mathf.Sin(t * Mathf.PI) * hopHeight;
+                transform.position = current;
+
                 yield return null;
             }
-            transform.position = dest;
+
+            transform.position = target;
+            restingLocalPos = transform.localPosition;
             IsMoving = false;
+
             onComplete?.Invoke();
         }
     }

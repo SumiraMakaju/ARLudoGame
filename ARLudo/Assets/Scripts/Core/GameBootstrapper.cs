@@ -68,6 +68,40 @@ public class GameBootstrapper : MonoBehaviour
             gameManager.OnPawnCaptured += _ => UpdateAllPanels();
             gameManager.OnPawnReachedGoal += _ => UpdateAllPanels();
             gameManager.OnPawnExitedYard += _ => UpdateAllPanels();
+
+                        hud.SetupRollButton(OnRollButtonPressed);
+            hud.InitPlayerPanels(playerList);
+            gameManager.OnTurnChanged += OnTurnChanged;
+            
+            gameManager.OnDiceRolled += v => 
+            {
+                hud.UpdateDice(v);
+                if (ARLudoAudioManager.Instance != null) ARLudoAudioManager.Instance.PlayDice();
+            };
+            
+            gameManager.OnLegalMovesCalculated += _ => hud.ShowChoosePawn();
+            gameManager.OnNoValidMoves += () => hud.ShowNoMoves();
+            
+            gameManager.OnPlayerWon += p => 
+            {
+                hud.ShowWinner(p);
+                if (ARLudoAudioManager.Instance != null) ARLudoAudioManager.Instance.PlayWin();
+                if (ARLudoVFXManager.Instance != null) ARLudoVFXManager.Instance.PlayWinVFX(Vector3.zero);
+            };
+            
+            gameManager.OnPawnCaptured += pawn => 
+            {
+                UpdateAllPanels();
+                if (ARLudoAudioManager.Instance != null) ARLudoAudioManager.Instance.PlayCapture();
+            };
+            
+            gameManager.OnPawnReachedGoal += pawn => 
+            {
+                UpdateAllPanels();
+                if (ARLudoAudioManager.Instance != null) ARLudoAudioManager.Instance.PlayGoal();
+            };
+            
+            gameManager.OnPawnExitedYard += _ => UpdateAllPanels();
         }
 
         gameManager.StartGame();
