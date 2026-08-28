@@ -26,7 +26,7 @@ namespace ARLudo.Dice
             Vector3.forward,
             Vector3.back
         };
-        private readonly int[] faceValues = { 1, 5, 3, 4, 2, 6 };
+        public int[] faceValues = { 1, 6, 3, 4, 5, 2 };
 
         void Awake()
         {
