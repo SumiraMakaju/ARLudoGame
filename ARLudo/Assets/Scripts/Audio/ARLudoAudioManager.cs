@@ -25,6 +25,7 @@ public class ARLudoAudioManager : MonoBehaviour
     {
         if (musicSource != null && bgm != null)
         {
+            musicSource.volume = 0.05f; 
             musicSource.clip = bgm;
             musicSource.loop = true;
             musicSource.Play();
