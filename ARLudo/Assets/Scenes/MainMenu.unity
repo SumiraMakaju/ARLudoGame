@@ -3585,19 +3585,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 405024187}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 42365912}
-        m_TargetAssemblyTypeName: ARLudo.UI.RulesCustomizerController, Assembly-CSharp
-        m_MethodName: Setup
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: ARLudo.Core.LudoRules, Assembly-CSharp
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &410938477
 GameObject:
   m_ObjectHideFlags: 0

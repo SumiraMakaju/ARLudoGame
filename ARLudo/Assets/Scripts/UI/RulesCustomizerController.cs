@@ -23,19 +23,32 @@ namespace ARLudo.UI
 
         private LudoRules targetRules;
 
-        public void Setup(LudoRules rules)
+        void Start()
         {
-            targetRules = rules;
-            LoadFromRules();
-
             turnTimerSlider.onValueChanged.AddListener(v =>
                 turnTimerValueText.text = v > 0 ? $"{v:0}s" : "OFF");
 
             applyBtn.onClick.AddListener(ApplyToRules);
         }
 
+        void OnEnable()
+        {
+            if (GameSettingsData.SelectedRules == null)
+            {
+                GameSettingsData.SelectedRules = ScriptableObject.CreateInstance<LudoRules>();
+            }
+            Setup(GameSettingsData.SelectedRules);
+        }
+
+        public void Setup(LudoRules rules)
+        {
+            targetRules = rules;
+            LoadFromRules();
+        }
+
         void LoadFromRules()
         {
+            if (targetRules == null) return;
             openingRollDropdown.value = (int)targetRules.openingRoll;
             bonusTurnOnSixToggle.isOn = targetRules.bonusTurnOnSix;
             consecutiveSixDropdown.value = (int)targetRules.consecutiveSixRule;
@@ -52,6 +65,7 @@ namespace ARLudo.UI
 
         void ApplyToRules()
         {
+            if (targetRules == null) return;
             targetRules.openingRoll = (OpeningRollRule)openingRollDropdown.value;
             targetRules.bonusTurnOnSix = bonusTurnOnSixToggle.isOn;
             targetRules.consecutiveSixRule = (ConsecutiveSixRule)consecutiveSixDropdown.value;

@@ -22,12 +22,17 @@ public class GameBootstrapper : MonoBehaviour
     private bool waitingForAI;
     private bool diceInProgress;
 
-    void Start()
+       void Start()
     {
         gameManager = gameObject.AddComponent<LudoGameManager>();
+        
+        if (GameSettingsData.SelectedRules != null)
+        {
+            rules = GameSettingsData.SelectedRules;
+        }
+        
         gameManager.rules = rules;
 
-        // Use GameSettingsData if available
         if (GameSettingsData.HumanPlayers > 0 || GameSettingsData.AIPlayers > 0)
         {
             humanPlayers = GameSettingsData.HumanPlayers;
@@ -45,8 +50,8 @@ public class GameBootstrapper : MonoBehaviour
 
         gameManager.InitializeGame(playerList);
         
-        // Initialize any LudoAgents in the scene so they can play
-        foreach(var agent in Object.FindObjectsByType<ARLudo.AI.LudoAgent>(FindObjectsSortMode.None)) {
+        foreach(var agent in Object.FindObjectsByType<ARLudo.AI.LudoAgent>(FindObjectsSortMode.None)) 
+        {
             agent.Setup(gameManager.Board, rules, playerList);
         }
         
@@ -54,31 +59,20 @@ public class GameBootstrapper : MonoBehaviour
         visualController.Initialize();
 
         diceController.OnDiceResult += OnDiceResult;
-        diceController.OnDiceThrown += () => diceInProgress = true;
+        
+        diceController.OnDiceThrown += () => 
+        {
+            diceInProgress = true;
+            if (ARLudoAudioManager.Instance != null) ARLudoAudioManager.Instance.PlayDice();
+        };
 
         if (hud != null)
         {
             hud.SetupRollButton(OnRollButtonPressed);
             hud.InitPlayerPanels(playerList);
+            
             gameManager.OnTurnChanged += OnTurnChanged;
             gameManager.OnDiceRolled += v => hud.UpdateDice(v);
-            gameManager.OnLegalMovesCalculated += _ => hud.ShowChoosePawn();
-            gameManager.OnNoValidMoves += () => hud.ShowNoMoves();
-            gameManager.OnPlayerWon += p => hud.ShowWinner(p);
-            gameManager.OnPawnCaptured += _ => UpdateAllPanels();
-            gameManager.OnPawnReachedGoal += _ => UpdateAllPanels();
-            gameManager.OnPawnExitedYard += _ => UpdateAllPanels();
-
-                        hud.SetupRollButton(OnRollButtonPressed);
-            hud.InitPlayerPanels(playerList);
-            gameManager.OnTurnChanged += OnTurnChanged;
-            
-            gameManager.OnDiceRolled += v => 
-            {
-                hud.UpdateDice(v);
-                if (ARLudoAudioManager.Instance != null) ARLudoAudioManager.Instance.PlayDice();
-            };
-            
             gameManager.OnLegalMovesCalculated += _ => hud.ShowChoosePawn();
             gameManager.OnNoValidMoves += () => hud.ShowNoMoves();
             
@@ -237,7 +231,7 @@ public class GameBootstrapper : MonoBehaviour
         }
     }
 
-        public void OnPawnSelected(PawnVisual pv)
+    public void OnPawnSelected(PawnVisual pv)
     {
         if (gameManager == null || gameManager.CurrentPhase != GamePhase.ChoosingPawn) return;
         if (gameManager.CurrentPlayer.IsAI || waitingForAI) return;
